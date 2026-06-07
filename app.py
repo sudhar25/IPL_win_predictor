@@ -42,5 +42,38 @@ with col5:
 toss_winner = st.radio('who won the toss?',('chasing team', 'defending team'))
 
 if st.button('predict win probability'):
-    st.success('working')
+    runs_left = target_score - current_runs
+    ball_left = 120 - (overs_completed * 6)
+    wickets_left = 10 - wickets_out
     
+    crr = (current_runs * 6) / (overs_completed * 6) if overs_completed > 0 else 0
+    rrr = (runs_left * 6) / ball_left if ball_left > 0 else 0
+    
+    chaser_won_toss = 1 if toss_winner == 'chasing team' else 0
+    
+    input_data = pd.DataFrame([{
+        'chaser_won_toss': chaser_won_toss,
+        'runs_left': runs_left,
+        'balls_left': ball_left,
+        'wickets_left': wickets_left,
+        'total_runs': target_score,
+        'crr': crr,
+        'rrr': rrr
+        
+    }]) 
+    
+    result = model.predict_proba(input_data)[0]
+    win_probability = round(result[1] * 100,1)
+    loss_probability = round(result[0] * 100,1)
+    
+    st.markdown('---')
+    st.subheader('live prediction details')
+    
+    col1, col2 = st.columns(2)
+    col1.metric("Current Run Rate (CRR)", round(crr, 2))
+    col2.metric("Required Run Rate (RRR)", round(rrr, 2))
+    
+    st.markdown(f"### {batting_team} Win Probability: {win_probability}%")
+    st.progress(int(win_probability))
+    
+    st.markdown(f"### {bowling_team} Win Probability: {loss_probability}%")
