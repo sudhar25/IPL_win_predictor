@@ -73,7 +73,16 @@ if st.button('predict win probability'):
     col1.metric("Current Run Rate (CRR)", round(crr, 2))
     col2.metric("Required Run Rate (RRR)", round(rrr, 2))
     
-    st.markdown(f"### {batting_team} Win Probability: {win_probability}%")
-    st.progress(int(win_probability))
+    st.markdown("### Win / Loss Probability Breakdown")
     
-    st.markdown(f"### {bowling_team} Win Probability: {loss_probability}%")
+    # Create a small DataFrame formatted specifically for the bar chart
+    chart_data = pd.DataFrame({
+        "Probability (%)": [win_probability, loss_probability]
+    }, index=[f"{batting_team} (Chase)", f"{bowling_team} (Defend)"])
+    
+    # Display the interactive Streamlit bar chart
+    st.bar_chart(chart_data)
+    
+    # Also print out the text percentages clearly underneath for quick reading
+    st.markdown(f"**{batting_team}**: {win_probability}% chance to win")
+    st.markdown(f"**{bowling_team}**: {loss_probability}% chance to win")
