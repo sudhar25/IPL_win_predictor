@@ -62,7 +62,7 @@ if st.button('predict win probability'):
         
     }]) 
     
-    result = model.predict_prob(input_data)[0]
+    result = model.predict_proba(input_data)[0]
     win_probability = round(result[1] * 100,1)
     loss_probability = round(result[0] * 100,1)
     
